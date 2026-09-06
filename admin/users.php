@@ -104,264 +104,42 @@ $admin_count = array_filter($users, function($u) { return $u['role'] == 'admin';
 $active_count = array_filter($users, function($u) { return $u['status'] == 'active'; });
 ?>
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>مدیریت کاربران</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <style>
-        /* ===== استایل‌های ادمین ===== */
-        :root {
-            --primary: #6C63FF;
-            --primary-dark: #5A52D5;
-            --primary-gradient: linear-gradient(135deg, #6C63FF 0%, #3F3D9E 100%);
-            --bg: #f0f2f8;
-            --bg-card: #ffffff;
-            --text: #1a1a2e;
-            --text-light: #6c6c8a;
-            --border: #e2e6f0;
-            --shadow: rgba(108, 99, 255, 0.12);
-            --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
-            --radius: 20px;
-            --radius-sm: 12px;
-            --transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --danger: #FF5252;
-            --success: #00E676;
-            --gold: #F9A825;
-            --glass-bg: rgba(255,255,255,0.08);
-            --orange: #FF9800;
-            --info: #448AFF;
-        }
-        [data-theme="dark"] {
-            --bg: #0a0a1a;
-            --bg-card: #16162e;
-            --text: #e8e8f0;
-            --text-light: #9090b0;
-            --border: #2a2a4a;
-            --glass-bg: rgba(255,255,255,0.05);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
-        body { background: var(--bg); color: var(--text); transition: all var(--transition); min-height: 100vh; }
-        a { text-decoration: none; color: inherit; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-
-        /* Admin Header */
-        .admin-header {
-            background: var(--bg-card);
-            border-bottom: 2px solid var(--border);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .admin-header .logo { font-size: 24px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
-        .admin-header .logo .brand-en { font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .admin-header .logo .badge { font-size: 12px; background: var(--primary-gradient); color: #fff; padding: 2px 12px; border-radius: 20px; -webkit-text-fill-color: #fff; }
-        .admin-header .user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-        .admin-header .user-info .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-gradient); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
-        .admin-header .back-btn { background: var(--glass-bg); border: 1px solid var(--border); padding: 6px 16px; border-radius: 30px; cursor: pointer; color: var(--text); transition: all var(--transition); font-family: 'Vazirmatn', sans-serif; font-size: 13px; }
-        .admin-header .back-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-
-        .admin-content { max-width: 1400px; margin: 0 auto; padding: 24px; }
-        .admin-content .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .admin-content .page-title i { color: var(--primary); }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .stat-card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            transition: all var(--transition);
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-        .stat-card .stat-icon { font-size: 28px; margin-bottom: 6px; }
-        .stat-card .stat-number { font-size: 28px; font-weight: 700; color: var(--text); }
-        .stat-card .stat-label { font-size: 13px; color: var(--text-light); }
-        .stat-card.total { border-right: 4px solid var(--primary); }
-        .stat-card.admins { border-right: 4px solid var(--gold); }
-        .stat-card.active { border-right: 4px solid var(--success); }
-        .stat-card.inactive { border-right: 4px solid var(--danger); }
-
-        /* Form */
-        .admin-form {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            padding: 24px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-        }
-        .admin-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
-        .admin-form .form-row.full { grid-template-columns: 1fr; }
-        .admin-form .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
-        .admin-form .form-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; color: var(--text); }
-        .admin-form .form-group input, .admin-form .form-group select {
-            width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm);
-            background: var(--bg); color: var(--text); font-family: 'Vazirmatn', sans-serif; font-size: 13px;
-            transition: all var(--transition);
-        }
-        .admin-form .form-group input:focus, .admin-form .form-group select:focus {
-            border-color: var(--primary); outline: none;
-        }
-        .admin-form .form-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-        .admin-form .form-actions button {
-            padding: 10px 28px; border: none; border-radius: 30px; cursor: pointer;
-            font-family: 'Vazirmatn', sans-serif; font-size: 14px; font-weight: 600;
-            transition: all var(--transition);
-        }
-        .admin-form .form-actions .btn-submit { background: var(--primary-gradient); color: #fff; }
-        .admin-form .form-actions .btn-submit:hover { transform: scale(1.03); }
-        .admin-form .form-actions .btn-cancel { background: var(--glass-bg); color: var(--text); border: 1px solid var(--border); }
-        .admin-form .form-actions .btn-cancel:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
-
-        .btn-primary-sm {
-            background: var(--primary-gradient); color: #fff; border: none;
-            padding: 8px 20px; border-radius: 30px; cursor: pointer;
-            font-family: 'Vazirmatn', sans-serif; font-size: 13px; font-weight: 600;
-            transition: all var(--transition);
-            margin-bottom: 16px;
-        }
-        .btn-primary-sm:hover { opacity: 0.85; transform: scale(1.05); }
-
-        /* Table */
-        .admin-table-container {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-        .admin-table-container .table-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .admin-table th { text-align: right; padding: 12px 16px; background: var(--bg); color: var(--text-light); font-weight: 600; border-bottom: 2px solid var(--border); font-size: 12px; }
-        .admin-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-        .admin-table tr:hover td { background: var(--glass-bg); }
-
-        .status-badge {
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        .status-badge.active { background: #E8F5E9; color: #2E7D32; }
-        .status-badge.inactive { background: #FFEBEE; color: #C62828; }
-        .status-badge.admin { background: #FFF3E0; color: #E65100; }
-        .status-badge.editor { background: #E3F2FD; color: #0D47A1; }
-        .status-badge.user { background: #F3E5F5; color: #6A1B9A; }
-        [data-theme="dark"] .status-badge.active { background: #1B5E20; color: #A5D6A7; }
-        [data-theme="dark"] .status-badge.inactive { background: #B71C1C; color: #EF9A9A; }
-        [data-theme="dark"] .status-badge.admin { background: #E65100; color: #FFE0B2; }
-        [data-theme="dark"] .status-badge.editor { background: #0D47A1; color: #90CAF9; }
-        [data-theme="dark"] .status-badge.user { background: #4A148C; color: #CE93D8; }
-
-        .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-        .action-btns button {
-            border: none;
-            padding: 4px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-family: 'Vazirmatn', sans-serif;
-            font-size: 11px;
-            transition: all var(--transition);
-            font-weight: 500;
-        }
-        .btn-edit { background: var(--glass-bg); color: var(--text); border: 1px solid var(--border) !important; }
-        .btn-edit:hover { background: var(--primary); color: #fff; border-color: var(--primary) !important; }
-        .btn-delete { background: #FFEBEE; color: #C62828; }
-        .btn-delete:hover { background: #C62828; color: #fff; }
-        .btn-toggle { background: #FFF3E0; color: #E65100; }
-        .btn-toggle:hover { background: #E65100; color: #fff; }
-        .btn-toggle.active { background: #E8F5E9; color: #2E7D32; }
-        .btn-toggle.active:hover { background: #2E7D32; color: #fff; }
-        .btn-role { background: #E3F2FD; color: #0D47A1; }
-        .btn-role:hover { background: #0D47A1; color: #fff; }
-
-        .message { padding: 12px 20px; border-radius: var(--radius-sm); margin-bottom: 16px; }
-        .message.success { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
-        .message.error { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
-
-        .avatar-small {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--primary-gradient);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .admin-form .form-row { grid-template-columns: 1fr; }
-            .admin-form .form-row.three { grid-template-columns: 1fr; }
-            .admin-table { font-size: 12px; }
-            .admin-table th, .admin-table td { padding: 8px 10px; }
-            .admin-header { padding: 10px 16px; }
-            .admin-header .logo { font-size: 18px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 480px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .admin-table th, .admin-table td { display: block; width: 100%; }
-            .admin-table thead { display: none; }
-            .admin-table tr { display: block; border-bottom: 2px solid var(--border); padding: 8px 0; }
-            .admin-table td { display: flex; justify-content: space-between; padding: 4px 8px; border: none; }
-            .admin-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-light); }
-            .action-btns { justify-content: flex-end; }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="../assets/css/admin.css" />
+    <script>(function(){try{var t=localStorage.getItem("theme");document.documentElement.setAttribute("data-theme",t||"dark");}catch(e){}})();</script>
 </head>
 <body>
     <!-- Header -->
     <header class="admin-header">
+        <button class="sidebar-toggle" onclick="toggleAdminSidebar()" aria-label="منو"><i class="fas fa-bars"></i></button>
         <div class="logo">
-            <span class="brand-en">Anosha</span>
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gmark" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse"><stop stop-color="#EAD6A6"/><stop offset=".45" stop-color="#D6B36A"/><stop offset="1" stop-color="#A9853E"/></linearGradient></defs><path d="M14 8h20l8 10-18 22L6 18 14 8z" fill="url(#gmark)"/><path d="M6 18h36M14 8l4 10 6-10 6 10 4-10M18 18l6 22 6-22" stroke="#0B0D12" stroke-opacity=".38" stroke-width="1.6"/></svg></span>
+            <span class="brand-en">دریکانا</span>
             <span class="badge">مدیریت کاربران</span>
         </div>
+        <button class="theme-btn" onclick="toggleAdminTheme()" aria-label="تغییر پوسته"><i class="fas fa-sun i-sun"></i><i class="fas fa-moon i-moon"></i></button>
         <div class="user-info">
             <span style="font-weight:500;"><?php echo $_SESSION['user_name']; ?></span>
             <div class="avatar"><?php echo mb_substr($_SESSION['user_name'], 0, 1); ?></div>
             <button class="back-btn" onclick="window.location.href='index.php'">داشبورد</button>
-            <button class="back-btn" onclick="window.location.href='logout.php'" style="background:var(--danger); color:#fff; border-color:var(--danger);">خروج</button>
+            <button class="back-btn danger" onclick="window.location.href='logout.php'">خروج</button>
         </div>
     </header>
 
     <!-- Content -->
-    <div class="admin-content">
+    <!-- ===== ADMIN LAYOUT ===== -->
+    <div class="admin-layout">
+        <?php $current_page = 'users.php'; require __DIR__ . '/partials/sidebar.php'; ?>
+
+        <!-- CONTENT -->
+        <div class="admin-content">
         <div class="page-title"><i class="fas fa-users"></i> مدیریت کاربران</div>
 
         <?php if ($message): ?>
@@ -374,22 +152,22 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
         <!-- آمار -->
         <div class="stats-grid">
             <div class="stat-card total">
-                <div class="stat-icon">👥</div>
+                <div class="stat-icon"><i class="fas fa-users" aria-hidden="true"></i></div>
                 <div class="stat-number"><?php echo $total_users; ?></div>
                 <div class="stat-label">مجموع کاربران</div>
             </div>
             <div class="stat-card admins">
-                <div class="stat-icon">🛡️</div>
+                <div class="stat-icon"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
                 <div class="stat-number"><?php echo count($admin_count); ?></div>
                 <div class="stat-label">مدیران</div>
             </div>
             <div class="stat-card active">
-                <div class="stat-icon">✅</div>
+                <div class="stat-icon"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
                 <div class="stat-number"><?php echo count($active_count); ?></div>
                 <div class="stat-label">کاربران فعال</div>
             </div>
             <div class="stat-card inactive">
-                <div class="stat-icon">⛔</div>
+                <div class="stat-icon"><i class="fas fa-ban" aria-hidden="true"></i></div>
                 <div class="stat-number"><?php echo $total_users - count($active_count); ?></div>
                 <div class="stat-label">کاربران غیرفعال</div>
             </div>
@@ -449,7 +227,7 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
         <!-- لیست کاربران -->
         <div class="admin-table-container">
             <div class="table-header">
-                <h3>👥 لیست کاربران</h3>
+                <h3><i class="fas fa-users" aria-hidden="true"></i> لیست کاربران</h3>
                 <span style="font-size:13px; color:var(--text-light);"><?php echo $total_users; ?> کاربر</span>
             </div>
             <table class="admin-table">
@@ -500,7 +278,7 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
                                 </td>
                                 <td>
                                     <span class="status-badge <?php echo $u['status']; ?>">
-                                        <?php echo $u['status'] == 'active' ? '✅ فعال' : '⛔ غیرفعال'; ?>
+                                        <?php echo $u['status'] == 'active' ? '<i class="fas fa-circle-check"></i> فعال' : '<i class="fas fa-ban"></i> غیرفعال'; ?>
                                     </span>
                                 </td>
                                 <td><?php echo $date_display; ?></td>
@@ -548,15 +326,15 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
         <div style="background:var(--bg-card); border-radius:var(--radius); padding:20px; border:1px solid var(--border);">
             <h4 style="margin-bottom:10px;"><i class="fas fa-info-circle" style="color:var(--primary);"></i> راهنمای کاربران</h4>
             <ul style="color:var(--text-light); font-size:13px; line-height:2; padding-right:20px;">
-                <li>📌 <strong>نقش‌ها</strong>: 
+                <li><i class="fas fa-thumbtack" aria-hidden="true"></i> <strong>نقش‌ها</strong>: 
                     <span class="status-badge admin" style="font-size:11px;">مدیر</span> دسترسی کامل | 
                     <span class="status-badge editor" style="font-size:11px;">نویسنده</span> می‌تواند مقاله بنویسد | 
                     <span class="status-badge user" style="font-size:11px;">کاربر</span> فقط می‌تواند نظر دهد
                 </li>
-                <li>📌 <strong>وضعیت</strong>: کاربران فعال می‌توانند وارد سایت شوند</li>
-                <li>📌 <strong>تغییر نقش</strong>: با کلیک روی دکمه <i class="fas fa-user-tag"></i> می‌توانید نقش کاربر را تغییر دهید</li>
-                <li>📌 <strong>امنیت</strong>: نمی‌توانید خودتان را حذف یا غیرفعال کنید</li>
-                <li>📌 <strong>تعداد کاربران</strong>: <?php echo $total_users; ?> کاربر در سیستم ثبت شده است</li>
+                <li><i class="fas fa-thumbtack" aria-hidden="true"></i> <strong>وضعیت</strong>: کاربران فعال می‌توانند وارد سایت شوند</li>
+                <li><i class="fas fa-thumbtack" aria-hidden="true"></i> <strong>تغییر نقش</strong>: با کلیک روی دکمه <i class="fas fa-user-tag"></i> می‌توانید نقش کاربر را تغییر دهید</li>
+                <li><i class="fas fa-thumbtack" aria-hidden="true"></i> <strong>امنیت</strong>: نمی‌توانید خودتان را حذف یا غیرفعال کنید</li>
+                <li><i class="fas fa-thumbtack" aria-hidden="true"></i> <strong>تعداد کاربران</strong>: <?php echo $total_users; ?> کاربر در سیستم ثبت شده است</li>
             </ul>
         </div>
     </div>
@@ -572,13 +350,13 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
             <p style="margin-bottom:12px; color:var(--text-light);">نقش جدید را برای کاربر انتخاب کنید:</p>
             <div id="roleOptions" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
                 <button onclick="setRole('user')" class="role-option" style="padding:10px 16px; border:2px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; background:var(--bg); text-align:right; font-family:'Vazirmatn', sans-serif; font-size:14px; transition:all var(--transition);">
-                    👤 کاربر عادی
+                    <i class="fas fa-user" aria-hidden="true"></i> کاربر عادی
                 </button>
                 <button onclick="setRole('editor')" class="role-option" style="padding:10px 16px; border:2px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; background:var(--bg); text-align:right; font-family:'Vazirmatn', sans-serif; font-size:14px; transition:all var(--transition);">
-                    ✍️ نویسنده
+                    <i class="fas fa-pen" aria-hidden="true"></i> نویسنده
                 </button>
                 <button onclick="setRole('admin')" class="role-option" style="padding:10px 16px; border:2px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; background:var(--bg); text-align:right; font-family:'Vazirmatn', sans-serif; font-size:14px; transition:all var(--transition);">
-                    🛡️ مدیر
+                    <i class="fas fa-shield-halved" aria-hidden="true"></i> مدیر
                 </button>
             </div>
             <input type="hidden" id="roleUserId" />
@@ -602,9 +380,9 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
             });
             
             const roleMap = {
-                'admin': '🛡️ مدیر',
-                'editor': '✍️ نویسنده',
-                'user': '👤 کاربر عادی'
+                'admin': '<i class="fas fa-shield-halved" aria-hidden="true"></i> مدیر',
+                'editor': '<i class="fas fa-pen" aria-hidden="true"></i> نویسنده',
+                'user': '<i class="fas fa-user" aria-hidden="true"></i> کاربر عادی'
             };
             
             document.querySelectorAll('.role-option').forEach(btn => {
@@ -645,11 +423,13 @@ $active_count = array_filter($users, function($u) { return $u['status'] == 'acti
             });
         });
 
-        console.log('👥 مدیریت کاربران');
-        console.log('📊 تعداد کل: <?php echo $total_users; ?>');
-        console.log('🛡️ مدیران: <?php echo count($admin_count); ?>');
-        console.log('✅ فعال: <?php echo count($active_count); ?>');
-        console.log('⛔ غیرفعال: <?php echo $total_users - count($active_count); ?>');
+        console.log('<i class="fas fa-users" aria-hidden="true"></i> مدیریت کاربران');
+        console.log('<i class="fas fa-chart-pie" aria-hidden="true"></i> تعداد کل: <?php echo $total_users; ?>');
+        console.log('<i class="fas fa-shield-halved" aria-hidden="true"></i> مدیران: <?php echo count($admin_count); ?>');
+        console.log('<i class="fas fa-circle-check" aria-hidden="true"></i> فعال: <?php echo count($active_count); ?>');
+        console.log('<i class="fas fa-ban" aria-hidden="true"></i> غیرفعال: <?php echo $total_users - count($active_count); ?>');
     </script>
+    </div><!-- /admin-layout -->
+    <script src="../assets/js/admin.js"></script>
 </body>
 </html>
