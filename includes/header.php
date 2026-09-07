@@ -135,6 +135,7 @@ $current_cat = $_GET['slug'] ?? $_GET['category'] ?? null;
             </li>
             <?php
             function renderMegaMenu($items) {
+                global $current_cat;
                 foreach ($items as $cat):
                     $has_children = !empty($cat['children']);
                     $link_target = (isset($cat['link_target']) && $cat['link_target'] == 1) ? ' target="_blank" rel="noopener"' : '';
@@ -190,6 +191,7 @@ $current_cat = $_GET['slug'] ?? $_GET['category'] ?? null;
         </a>
         <?php
         function renderMobileCategories($items) {
+            global $current_cat;
             foreach ($items as $cat):
                 $link_target = (isset($cat['link_target']) && $cat['link_target'] == 1) ? ' target="_blank" rel="noopener"' : '';
                 $href = (($cat['link_type'] ?? 'internal') == 'external' && !empty($cat['external_link'])) ? $cat['external_link'] : 'category.php?slug=' . $cat['slug'];

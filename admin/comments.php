@@ -238,7 +238,7 @@ if (isset($_GET['reply'])) {
                                     <div style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                                         <?php echo $comment_text; ?>
                                     </div>
-                                    <?php if ($c['admin_note']): ?>
+                                    <?php if (!empty($c['admin_note'])): ?>
                                         <div style="font-size:10px; color:var(--info); margin-top:2px;">
                                             <i class="fas fa-reply"></i> پاسخ ارسال شده
                                         </div>

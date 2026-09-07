@@ -1,7 +1,7 @@
 <?php
 // reset_password.php — ابزار بازیابی اضطراری رمز عبور
 // ⚠️ این فایل فقط برای شرایط اضطراری است؛ پس از استفاده حذفش کنید.
-require_once 'config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $message = '';
 

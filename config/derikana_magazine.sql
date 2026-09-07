@@ -151,6 +151,7 @@ CREATE TABLE `comments`  (
   `text` text CHARACTER SET utf8 COLLATE utf8_persian_ci NOT NULL,
   `status` enum('pending','approved','rejected') CHARACTER SET utf8 COLLATE utf8_persian_ci NULL DEFAULT 'pending',
   `parent_id` int NULL DEFAULT NULL,
+  `admin_note` text CHARACTER SET utf8 COLLATE utf8_persian_ci NULL DEFAULT NULL,
   `created_at` datetime NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `article_id`(`article_id` ASC) USING BTREE,
